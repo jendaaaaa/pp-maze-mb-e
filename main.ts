@@ -19,9 +19,9 @@ pins.setPull(PIN_SWITCH_OPEN, PinPullMode.PullUp);
 
 // COLORS
 let COL_BLUE = 216;
-let COL_PINK = -14;
+let COL_PINK = 0;
 let COL_GREEN = 150;
-let COL_ORANGE = 0;
+let COL_ORANGE = 10;
 let COL_YELLOW = 20;
 let COL_NO_COLOR = 60;
 let COL_EMPTY = -1000;
