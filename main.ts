@@ -10,6 +10,7 @@ let PIN_SWITCH_CLOSE = DigitalPin.P9;
 
 // INIT
 radio.setGroup(8);
+basic.showString("E");
 apds9960.Init(11.12);
 apds9960.ColorMode();
 let NUM_LEDS = 8;
@@ -19,15 +20,20 @@ pins.setPull(PIN_SWITCH_OPEN, PinPullMode.PullUp);
 
 // COLORS
 let COL_BLUE = 216;
-let COL_PINK = 0;
+let COL_PINK = -14;
 let COL_GREEN = 150;
-let COL_ORANGE = 10;
 let COL_YELLOW = 20;
 let COL_NO_COLOR = 60;
 let COL_EMPTY = -1000;
 let ARR_COL = [COL_BLUE, COL_PINK, COL_GREEN, COL_YELLOW];
-let ERROR = 10;
-let LIGHT_TRESHOLD = 300;
+let ERROR = 20;
+let LIGHT_TRESHOLD = 1100;
+
+// NEOPIXEL COLORS
+let NEO_BLUE = neopixel.rgb(0, 203, 255);
+let NEO_GREEN = neopixel.rgb(28, 238, 0);
+let NEO_YELLOW = neopixel.rgb(255, 130, 0);
+let NEO_PINK = neopixel.rgb(255, 0, 59);
 
 // CONSTANTS
 let SERVO_STOP = 90
@@ -58,7 +64,7 @@ radio.onReceivedNumber(function (receivedNumber) {
 radio.onReceivedValue(function (name: string, value: number) {
     if (name === RADIO_COLOR_NAME) {
         colorCorrect = value;
-        basic.showNumber(value);
+        // basic.showNumber(value);
     }
 })
 
@@ -72,27 +78,28 @@ basic.forever(function () {
     }
     if (ambientMeasured <= LIGHT_TRESHOLD) {
         colorNeopixel = NeoPixelColors.White;
+        isCorrect = false;
     } else {
         // neopixel
         if (colorMeasured <= COL_GREEN + ERROR && colorMeasured >= COL_GREEN - ERROR) {
-            colorNeopixel = neopixel.rgb(28, 238, 0);
+            colorNeopixel = NEO_GREEN;
         } else if (colorMeasured <= COL_BLUE + ERROR && colorMeasured >= COL_BLUE - ERROR) {
-            colorNeopixel = neopixel.rgb(0, 203, 255);
-        } else if (colorMeasured <= COL_ORANGE + ERROR && colorMeasured >= COL_ORANGE - ERROR) {
-            colorNeopixel = neopixel.rgb(255, 34, 0);
+            colorNeopixel = NEO_BLUE;
+        // } else if (colorMeasured <= COL_ORANGE + ERROR && colorMeasured >= COL_ORANGE - ERROR) {
+        //     colorNeopixel = neopixel.rgb(255, 34, 0);
         } else if (colorMeasured <= COL_YELLOW + ERROR && colorMeasured >= COL_YELLOW - ERROR) {
-            colorNeopixel = neopixel.rgb(255, 130, 0);
+            colorNeopixel = NEO_YELLOW;
         } else if (colorMeasured <= COL_PINK + ERROR && colorMeasured >= COL_PINK - ERROR) {
-            colorNeopixel = neopixel.rgb(255, 0, 59);
+            colorNeopixel = NEO_PINK;
         } else {
             colorNeopixel = NeoPixelColors.White;
         }
-    }
-    // check if correct
-    if (colorMeasured <= colorCorrect + ERROR && colorMeasured >= colorCorrect - ERROR) {
-        isCorrect = true;
-    } else {
-        isCorrect = false;
+        // check if correct
+        if (colorMeasured <= colorCorrect + ERROR && colorMeasured >= colorCorrect - ERROR) {
+            isCorrect = true;
+        } else {
+            isCorrect = false;
+        }
     }
     strip.showColor(colorNeopixel);
     pause(100);
